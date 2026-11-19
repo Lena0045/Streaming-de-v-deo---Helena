@@ -1,92 +1,113 @@
 
-# Devolutiva formativa — Atividade 01 da SA
+# Devolutiva formativa — Atividade 02 da SA
 
 **Estudante:** Helena Gonçalves Cordeiro  
 **Turma:** Rio Negrinho — Manhã  
 **Unidade Curricular:** Programação de Aplicativos  
-**Projeto escolhido:** Streaming de vídeo  
-**Referência:** Situação de Aprendizagem nº 1 — *Da Ideia ao Código*
+**Projeto:** Streaming de Vídeo  
+**Atividade:** Interface funcional  
+**Arquivos analisados:** `interface/index.html`, `interface/style.css` e estrutura do código Python
 
 ## O que você já conseguiu desenvolver
 
-Helena, seu projeto apresenta uma implementação extensa de uma aplicação relacionada a streaming de vídeo. Na análise anterior do código enviado, foram identificados recursos de programação orientada a objetos, funções auxiliares, validações e tratamento de exceções. Esses elementos demonstram preocupação com a organização do programa e com situações que podem ocorrer durante sua utilização.
+Helena, você criou uma interface web relacionada ao seu projeto de streaming de vídeo.
+
+O HTML apresenta componentes para gerenciamento de mídia, reprodução e atualização das informações do conteúdo.
 
 Pontos positivos identificados:
 
-- Utilizou **programação orientada a objetos**, organizando responsabilidades em classes e métodos.
-- Aplicou **funções auxiliares** para dividir tarefas e reaproveitar partes da lógica.
-- Incluiu **validações de dados e tratamento de exceções**, importantes para evitar que entradas ou operações inesperadas interrompam a aplicação sem explicação.
-- Desenvolveu uma solução que envolve **ambiente gráfico e reprodução de mídia**, ampliando os conhecimentos trabalhados no código Python.
-- Apresentou uma implementação de aproximadamente **918 linhas**, com diferentes componentes que precisam atuar de maneira integrada.
-- Na revisão anterior, **as funções auxiliares verificadas apresentaram resultados adequados nos testes pontuais**.
+- Criou uma página HTML estruturada com cabeçalho, seções e formulários.
+- Utilizou templates Jinja2 para apresentar informações recebidas da aplicação.
+- Incluiu mensagens de sucesso e erro.
+- Criou formulário para adicionar vídeo MP4.
+- Implementou campos para nome e descrição.
+- Organizou ações de edição, substituição e exclusão de vídeo.
+- Utilizou o elemento `video` e controles relacionados à reprodução.
+- Aplicou atributos de validação HTML, como `required`, `maxlength` e `accept`.
+- Incluiu comentários explicando diferentes partes do código.
 
-## Pontos que precisam de atenção
+## Comparação com a devolutiva anterior
 
-### 1. Comprovar a reprodução de vídeo no ambiente de execução
+### 1. Criação de interface — ATENDIDO
 
-A reprodução completa depende do ambiente gráfico e do VLC. Na verificação anterior, foi possível avaliar a estrutura do código e realizar testes pontuais de funções auxiliares, mas **a reprodução de mídia não foi confirmada de ponta a ponta**.
+Na Atividade 01, foi recomendada a evolução do projeto para uma interface capaz de apresentar os recursos ao usuário.
 
-**Como melhorar:** executar o programa no computador de apresentação e demonstrar a seleção, o início e o encerramento de uma reprodução. Confirmar se o VLC e as bibliotecas necessárias estão instalados e se o programa encontra os arquivos ou endereços de mídia utilizados.
+Agora existe uma página com formulários e controles relacionados ao contexto de streaming.
 
-### 2. Documentar as dependências do projeto
+**Evolução positiva:** a estrutura da interface está mais clara e organizada.
 
-Uma aplicação que depende de componentes gráficos e do VLC pode funcionar em um computador e apresentar dificuldades em outro, mesmo quando o código Python está correto.
+### 2. Testes de reprodução — PENDENTE DE COMPROVAÇÃO
 
-**Como melhorar:** informar no README a versão de Python utilizada, as bibliotecas necessárias, a dependência do VLC, os comandos de instalação e o procedimento para iniciar a aplicação. Registrar também os formatos de mídia testados e eventuais limitações conhecidas.
+A devolutiva anterior recomendou demonstrar a reprodução de mídia de ponta a ponta.
 
-### 3. Manter a organização de um código extenso
+A nova página HTML apresenta componentes para isso, mas o funcionamento completo ainda não pôde ser confirmado pela inspeção dos arquivos.
 
-Um projeto com muitas linhas e diferentes funcionalidades exige atenção para que alterações em uma parte não prejudiquem as demais.
+### 3. Organização entre módulos — PARCIALMENTE ATENDIDO
 
-**Como melhorar:** verificar se interface, reprodução de mídia, validações e regras de funcionamento estão suficientemente separadas. Quando necessário, distribuir essas responsabilidades em módulos menores, com nomes claros e funções reutilizáveis.
+O HTML está separado dos demais arquivos, mas é necessário restaurar ou identificar a implementação Python que atenderá às suas ações.
+
+## O que precisa ser corrigido
+
+### 4. Restaurar o arquivo Python responsável pelo sistema
+
+Na versão atual do repositório, `codigo/dados_meu_streaming/app.py` está vazio.
+
+O código Python anteriormente disponível foi retirado da estrutura atual.
+
+**Como melhorar:** restaurar a versão funcional ou disponibilizar o arquivo que realmente executa o sistema. As ações de adicionar, editar, substituir e excluir precisam de rotas correspondentes.
+
+### 5. Conferir a ligação entre HTML, Flask e CSS
+
+O template utiliza referências como `/static/style.css`, enquanto o CSS disponível está em `interface/style.css`.
+
+**Como melhorar:** configurar corretamente o diretório de arquivos estáticos no Flask ou ajustar o caminho utilizado no HTML.
+
+### 6. Completar os estilos da interface
+
+O arquivo CSS atual contém apenas regras básicas e não contempla vários componentes identificados no HTML.
+
+**Como melhorar:** criar estilos correspondentes às classes utilizadas para cabeçalho, painéis, botões, avisos, formulários e reprodução.
 
 ## Oportunidades de melhoria
 
-### 4. Ampliar os testes das situações de erro
+### 7. Validar o envio de vídeos também no servidor
 
-As validações e exceções identificadas são positivas. O próximo passo é comprovar seu comportamento nos casos em que um recurso externo não está disponível.
+O HTML limita a seleção a arquivos MP4, mas a validação no navegador não substitui a validação do backend.
 
-**Como melhorar:** testar uma mídia inexistente, um caminho inválido, a ausência da biblioteca necessária e tentativas de executar operações fora da sequência esperada. Sempre que possível, apresentar uma mensagem compreensível e permitir que o programa continue ou encerre de forma controlada.
+**Como melhorar:** conferir no Python o tipo permitido, os limites do arquivo e as situações em que o envio não puder ser concluído.
 
-### 5. Separar testes de lógica dos testes de integração
+### 8. Documentar as dependências
 
-Funções auxiliares podem funcionar corretamente isoladamente, mas isso não garante, por si só, que a reprodução e a interface estejam integradas.
+**Como melhorar:** atualizar o README com as bibliotecas necessárias, o procedimento de inicialização e a localização dos arquivos de mídia.
 
-**Como melhorar:** manter testes para funções que não dependem da interface e criar um roteiro manual para verificar o funcionamento completo da aplicação. Registrar quais resultados foram confirmados.
+### 9. Testar ações de gerenciamento
 
-### 6. Aprimorar a documentação das responsabilidades
-
-A orientação a objetos facilita a manutenção quando fica claro o papel de cada classe e método.
-
-**Como melhorar:** utilizar docstrings curtas para explicar responsabilidades, parâmetros e resultados; manter comentários nos trechos de lógica mais complexa; e evitar explicações redundantes em operações simples.
-
-### 7. Preparar a evolução do projeto
-
-A estrutura inicial pode servir de base para novas funcionalidades, desde que o funcionamento essencial esteja demonstrado e seja possível reproduzir a execução em outro ambiente.
-
-**Como melhorar:** priorizar uma versão estável, documentada e testável antes de ampliar os recursos. Nas etapas seguintes, integrar interface e armazenamento conforme os requisitos da Situação de Aprendizagem.
+**Como melhorar:** verificar se os formulários realmente executam as operações de adição, edição, substituição e exclusão, apresentando mensagens adequadas.
 
 ## Testes recomendados
 
-1. Iniciar o programa em um ambiente com todas as dependências instaladas.
-2. Demonstrar uma reprodução completa de mídia válida.
-3. Verificar o comportamento ao informar um arquivo ou caminho inexistente.
-4. Testar as operações de iniciar, interromper e encerrar a reprodução, conforme os controles disponíveis.
-5. Verificar o comportamento quando uma dependência de reprodução não estiver disponível.
-6. Executar novamente os testes das funções auxiliares após alterações no código.
-7. Confirmar que a interface apresenta mensagens claras quando uma operação não puder ser concluída.
-8. Seguir apenas as instruções do README para verificar se outra pessoa consegue executar o projeto.
+1. Executar a aplicação pelo arquivo Python principal.
+2. Verificar o carregamento do HTML e do CSS.
+3. Adicionar um vídeo MP4 válido.
+4. Tentar enviar um arquivo inadequado.
+5. Reproduzir, pausar e retomar um vídeo.
+6. Editar o nome e a descrição.
+7. Substituir o vídeo por outro.
+8. Cancelar e confirmar uma exclusão.
+9. Reiniciar o sistema e verificar a disponibilidade do conteúdo.
 
 ## Prioridades para a próxima versão
 
-1. **Demonstrar a reprodução de vídeo funcionando de ponta a ponta.**
-2. **Documentar todas as dependências e o procedimento de execução.**
-3. **Organizar as responsabilidades em classes e módulos de fácil manutenção.**
-4. **Registrar testes de integração e situações de erro.**
-5. **Manter a clareza da documentação e dos comentários.**
+1. **Restaurar e documentar o código Python executável.**
+2. **Conectar as ações do HTML às rotas correspondentes.**
+3. **Corrigir o carregamento do CSS.**
+4. **Demonstrar a reprodução completa de vídeo.**
+5. **Testar os formulários e as situações de erro.**
 
 ## Mensagem final
 
-Helena, seu trabalho demonstra iniciativa para explorar **orientação a objetos, validações, tratamento de exceções e integração com recursos de reprodução de mídia**. A estrutura apresentada na análise anterior constitui uma base importante para a continuidade do projeto.
+Helena, sua interface apresenta uma estrutura interessante para gerenciamento de conteúdo de vídeo.
 
-O próximo desafio é comprovar o funcionamento completo no ambiente de apresentação e tornar a instalação e os testes reproduzíveis. **Continue valorizando a organização do código e a verificação prática de cada funcionalidade.** Esses cuidados são essenciais para transformar uma implementação extensa em uma aplicação confiável e fácil de manter.
+Você avançou na apresentação das funcionalidades ao usuário e na documentação do HTML.
+
+Agora é essencial garantir a ligação entre a interface e o código Python, demonstrando que os recursos apresentados realmente executam as operações previstas.
