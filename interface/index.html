@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meu Streaming</title>
+  <!-- Aqui ligamos o arquivo que cuida só da aparência (cores, botões, bordas). -->
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- Aqui fica o cabeçalho do site, com o nome da plataforma. -->
+  <header class="topo">
+    <h1><span class="icone">▶</span>Meu Streaming</h1>
+    <p>Seu cantinho para assistir com calma ✦</p>
+  </header>
+
+  <main class="conteudo">
+
+    <!-- Aqui mostramos os avisos (sucesso ou erro) vindos do Python. -->
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% for categoria, texto in mensagens %}
+        {% if categoria == "erro" %}
+          <div class="aviso erro" role="alert"><strong>❌ Erro:</strong> {{ texto }}</div>
+        {% else %}
+          <div class="aviso ok" role="status"><strong>✅ {{ texto }}</strong></div>
+        {% endif %}
+      {% endfor %}
+    {% endwith %}
+
+    {% if not video %}
+
+      <!-- Nenhum vídeo cadastrado ainda: mostramos um aviso bonitinho. -->
+      <section class="painel centro">
+        <h2>✧ Nenhum conteúdo disponível</h2>
+        <p>Ainda não existe nenhum vídeo cadastrado. Que tal adicionar o primeiro?</p>
+      </section>
+
+      <!-- Esse formulário permite enviar o primeiro vídeo.
+           O enctype="multipart/form-data" é o que permite enviar arquivos! -->
+      <section class="painel">
+        <h2>Adicionar o primeiro vídeo</h2>
+        <form action="/adicionar" method="post" enctype="multipart/form-data">
+          <p>
+            <label for="arquivo_add">Arquivo MP4</label><br>
+            <!-- O name="arquivo" precisa ser igual ao que o Python espera. -->
+            <input type="file" id="arquivo_add" name="arquivo"
+                   accept=".mp4,video/mp4" required>
+          </p>
+          <p>
+            <label for="nome_add">Nome do vídeo</label><br>
+            <input type="text" id="nome_add" name="nome"
+                   maxlength="{{ limite_nome }}" required>
+          </p>
+          <p>
+            <label for="desc_add">Descrição (opcional)</label><br>
+            <textarea id="desc_add" name="descricao" rows="4"
+                      maxlength="{{ limite_descricao }}"></textarea>
+          </p>
+          <p class="centro"><button type="submit" class="salvar">＋ Adicionar vídeo</button></p>
+          <p class="pequeno centro">Dependendo do tamanho do arquivo, o envio pode levar um tempinho. Aguarde a página recarregar.</p>
+        </form>
+      </section>
+
+    {% else %}
+
+      <!-- Aqui fica o espaço onde o vídeo será reproduzido. -->
+      <section class="painel centro">
+        <h2 class="titulo-video">{{ video.nome }}</h2>
+
+        {% if arquivo_ok %}
+          <!-- O player nativo do navegador já traz: reproduzir/pausar, volume,
+               barra de progresso, tempo atual/duração e tela cheia. -->
+          <div class="player-caixa">
+            <video controls preload="metadata"
+                   {% if inicio > 0 %}autoplay{% endif %}
+                   src="/video#t={{ inicio }}">
+              Seu navegador não suporta o player de vídeo HTML5.
+              <a href="/video">Clique aqui para baixar o vídeo.</a>
+            </video>
+          </div>
+
+          <!-- Botões de avançar e retroceder 10 segundos.
+               Sem JavaScript, a página recarrega o vídeo a partir do novo ponto
+               (início atual: {{ inicio_txt }}). -->
+          <div class="barra-controles">
+            <a class="botao voltar" href="/?t={{ [inicio - 10, 0]|max }}">« Voltar 10s</a>
+            <span class="ponto">Ponto inicial: {{ inicio_txt }}</span>
+            <a class="botao avancar" href="/?t={{ inicio + 10 }}">Avançar 10s »</a>
+          </div>
+
+          <!-- Esse formulário leva o vídeo direto para um segundo escolhido. -->
+          <form class="form-ir" action="/" method="get">
+            <label for="ir_para">Ir para o segundo:</label>
+            <input type="number" id="ir_para" name="t" min="0" value="{{ inicio }}">
+            <button type="submit" class="ir">Ir</button>
+            <a class="botao neutro" href="/">↺ Voltar ao início</a>
+          </form>
+
+          <p class="dica">Dica: dentro do player, clique na barra de progresso para pular para qualquer ponto. Os botões acima recarregam o vídeo a partir do ponto indicado em "Ponto inicial": eles somam ou subtraem 10s desse ponto, não do instante exato em que o vídeo está.</p>
+        {% else %}
+          <!-- O vídeo está no banco, mas o arquivo sumiu da pasta. -->
+          <div class="aviso erro"><strong>❌ Vídeo não encontrado:</strong> o arquivo não está mais na pasta "videos".
+            Use "Substituir vídeo" ou "Excluir vídeo" abaixo.</div>
+        {% endif %}
+      </section>
+
+      <!-- Aqui mostramos as informações do vídeo cadastrado. -->
+      <section class="painel">
+        <h2>Informações do vídeo cadastrado</h2>
+        <table class="info">
+          <tr><th>ID</th><td>{{ video.id }}</td></tr>
+          <tr><th>Nome</th><td>{{ video.nome }}</td></tr>
+          <tr><th>Descrição</th><td>{{ video.descricao }}</td></tr>
+          <tr><th>Cadastrado em</th><td>{{ video.data }}</td></tr>
+          <tr><th>Arquivo</th><td>{{ video.caminho }}</td></tr>
+          <tr><th>Tamanho</th><td>{{ video.tamanho }}</td></tr>
+          <tr><th>Formato</th><td>{{ video.formato }}</td></tr>
+          <tr><th>Situação</th>
+              <td>{% if arquivo_ok %}Pronto para reproduzir.{% else %}ATENÇÃO: arquivo não encontrado.{% endif %}</td></tr>
+        </table>
+      </section>
+
+      <!-- Aqui ficam as opções de gerenciamento (clique para abrir cada uma). -->
+      <section class="painel">
+        <h2>Gerenciar vídeo</h2>
+
+        <!-- Editar só o nome e a descrição, sem trocar o arquivo. -->
+        <details>
+          <summary>✎ Editar nome e descrição</summary>
+          <form action="/editar" method="post">
+            <p>
+              <label for="nome_edit">Nome do vídeo</label><br>
+              <input type="text" id="nome_edit" name="nome"
+                     maxlength="{{ limite_nome }}" value="{{ video.nome }}" required>
+            </p>
+            <p>
+              <label for="desc_edit">Descrição (opcional)</label><br>
+              <textarea id="desc_edit" name="descricao" rows="4"
+                        maxlength="{{ limite_descricao }}">{% if video.descricao != "(sem descrição)" %}{{ video.descricao }}{% endif %}</textarea>
+            </p>
+            <p><button type="submit" class="salvar">Salvar alterações</button></p>
+          </form>
+        </details>
+
+        <!-- Substituir o vídeo por outro arquivo MP4.
+             O vídeo antigo só é apagado depois que o novo for salvo com sucesso. -->
+        <details>
+          <summary>⇄ Substituir vídeo</summary>
+          <form action="/substituir" method="post" enctype="multipart/form-data">
+            <p>
+              <label for="arquivo_sub">Novo arquivo MP4</label><br>
+              <input type="file" id="arquivo_sub" name="arquivo"
+                     accept=".mp4,video/mp4" required>
+            </p>
+            <p>
+              <label for="nome_sub">Nome do vídeo</label><br>
+              <input type="text" id="nome_sub" name="nome"
+                     maxlength="{{ limite_nome }}" value="{{ video.nome }}" required>
+            </p>
+            <p>
+              <label for="desc_sub">Descrição (opcional)</label><br>
+              <textarea id="desc_sub" name="descricao" rows="4"
+                        maxlength="{{ limite_descricao }}">{% if video.descricao != "(sem descrição)" %}{{ video.descricao }}{% endif %}</textarea>
+            </p>
+            <p><button type="submit" class="trocar">Substituir vídeo</button></p>
+          </form>
+        </details>
+
+        <!-- Excluir o vídeo. Como não temos JavaScript para perguntar "tem certeza?",
+             usamos uma caixinha de confirmação. -->
+        <details>
+          <summary>✕ Excluir vídeo</summary>
+          <form action="/excluir" method="post">
+            <p>O arquivo e o registro serão removidos permanentemente.</p>
+            <p>
+              <input type="checkbox" id="confirmar" name="confirmar" value="sim" required>
+              <label for="confirmar">Sim, quero excluir o vídeo "{{ video.nome }}".</label>
+            </p>
+            <p><button type="submit" class="excluir">Excluir vídeo</button></p>
+          </form>
+        </details>
+
+        <!-- Só pode existir um vídeo: por isso o cadastro de um segundo é bloqueado. -->
+        <p class="pequeno">Só é possível ter um vídeo por vez. Para colocar outro, use "Substituir vídeo".</p>
+      </section>
+
+    {% endif %}
+
+  </main>
+
+</body>
+</html>
